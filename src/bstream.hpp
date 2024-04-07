@@ -1,5 +1,3 @@
-#include <ios>
-#include <string>
 #ifndef BSTREAM_HPP
 #define BSTREAM_HPP
 
