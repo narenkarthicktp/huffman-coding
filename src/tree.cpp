@@ -1,4 +1,5 @@
 #include "tree.hpp"
+#include <iostream>
 
 tree::tree(std::string data, tree* left, tree* right, int frequency)
 {

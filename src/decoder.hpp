@@ -1,8 +1,6 @@
 #ifndef DECODER_HPP
 #define DECODER_HPP
 
-#include <stack>
-#include <ostream>
 #include "tree.hpp"
 #include "bstream.hpp"
 

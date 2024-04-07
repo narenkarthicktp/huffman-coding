@@ -1,7 +1,6 @@
 #ifndef BSTREAM_HPP
 #define BSTREAM_HPP
 
-#include <iostream>
 #include <fstream>
 
 class bstream

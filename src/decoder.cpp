@@ -1,5 +1,7 @@
 #include "decoder.hpp"
 #include "bstream.hpp"
+#include <iostream>
+#include <stack>
 
 tree* reconstruct_tree(ibstream* bin)
 {

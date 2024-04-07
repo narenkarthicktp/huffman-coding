@@ -1,9 +1,6 @@
 #ifndef TREE_H
 #define TREE_H
 
-#include <iostream>
-#include <bitset>
-#include <list>
 #include <string>
 
 #define MAX   256
@@ -13,7 +10,7 @@
 class tree
 {
 public:
-	std:: string data;
+	std::string data;
 	int frequency;
 	tree* left;
 	tree* right;
@@ -26,7 +23,6 @@ public:
 	char operator[](std::string path);
 
 	std::string to_string();
-	std::string serialize(tree* curr, std::string meta);
 };
 
 #endif // TREE_H

@@ -1,4 +1,6 @@
 #include "encoder.hpp"
+#include <ios>
+#include <iostream>
 
 unsigned int* get_byte_frequency(std::string source_file)
 {
@@ -6,7 +8,8 @@ unsigned int* get_byte_frequency(std::string source_file)
 	unsigned int* frequency_array = (unsigned int*)calloc(256, sizeof(unsigned int));
 	char c;
 
-	if (!fin) {
+	if (!fin)
+	{
 		std::cout<<"Unable to open file";
 		return NULL;
 	}
@@ -44,33 +47,31 @@ void write_header(tree* huffman, obstream* bout)
 	bout->write_bit(0);
 }
 
-unsigned int write_prefix_codes(tree* huffman, std::string source_file, obstream* bout)
+unsigned int write_prefix_codes(tree* huffman, std::istream* in, obstream* bout)
 {
-	std::ifstream fin(source_file);
 	unsigned int total_bits = 0;
 	char c;
 
-	if(!fin or !bout)
+	if(!in or !bout)
 		return 0;
 
-	while(fin.get(c))
+	while(in->get(c))
 	{
 		std::string bitstring = (*huffman)[c];
 		total_bits += bitstring.length();
 		for(auto bit : bitstring)
 			bout->write_bit(bit == '1');
 	}
-	fin.close();
 
 	return total_bits;
 }
 
-std::string encode(std::string source_file, std::string target_file)
+void encode(std::string source_file, std::string target_file)
 {
-	// COUNT CHARACTERS
+	// count characters
 	unsigned int* frequency_array = get_byte_frequency(source_file);
 
-	// GROW FOREST :P
+	// grow forest :p
 	minheap forest;
 	for(int i = 0; i < 256; i++)
 	{
@@ -78,15 +79,17 @@ std::string encode(std::string source_file, std::string target_file)
 			forest.push(new tree(std::string(1, i), NULL, NULL, frequency_array[i]));
 	}
 
-	// CREATE HUFFMAN TREE
+	// create huffman tree
 	tree* huffman = optimal_merge(forest);
-	// tree::inorder(huffman);
-	// std::cout<<huffman->to_string()<<std::endl;
 
 	obstream bout(target_file);
-	write_header(huffman, &bout);
-	write_prefix_codes(huffman, source_file, &bout);
-	bout.close();
+	std::fstream fin(source_file, std::ios_base::in);
 
-	return target_file;
+	// header contains the huffman tree
+	write_header(huffman, &bout);
+	// encode data using huffman tree
+	write_prefix_codes(huffman, &fin, &bout);
+
+	fin.close();
+	bout.close();
 }
