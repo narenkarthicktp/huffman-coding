@@ -1,0 +1,9 @@
+# binaries
+obj/
+bin/
+# sublime text
+Huffman.sublime-project
+Huffman.sublime-workspace
+# my mess
+*.txt
+*.huf
