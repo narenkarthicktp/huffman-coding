@@ -9,14 +9,14 @@ int main(int argc, char const *argv[])
 	switch(argc)
 	{
 		case 4:
-			if(!strcmpi(argv[1], "-e"))
+			if(!strcmp(argv[1], "-e"))
 			{
 				source_file = string(argv[2]);
 				target_file = string(argv[3]);
 				encode(source_file, target_file);
 				break;
 			}
-			else if(!strcmpi(argv[1], "-d"))
+			else if(!strcmp(argv[1], "-d"))
 			{
 				source_file = string(argv[2]);
 				target_file = string(argv[3]);
