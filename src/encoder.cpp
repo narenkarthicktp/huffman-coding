@@ -1,5 +1,4 @@
 #include "encoder.hpp"
-#include <ios>
 #include <iostream>
 
 unsigned int* get_byte_frequency(std::string source_file)
@@ -33,7 +32,7 @@ tree* optimal_merge(minheap forest)
 
 void write_header(tree* huffman, obstream* bout)
 {
-	if(!bout)
+	if(!bout || !(bout->is_open()))
 		return;
 
 	std::string meta = huffman->to_string();
@@ -52,7 +51,7 @@ unsigned int write_prefix_codes(tree* huffman, std::istream* in, obstream* bout)
 	unsigned int total_bits = 0;
 	char c;
 
-	if(!in or !bout)
+	if(!in || !bout || !(bout->is_open()))
 		return 0;
 
 	while(in->get(c))

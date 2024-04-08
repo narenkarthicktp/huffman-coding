@@ -13,6 +13,7 @@ public:
 	bstream(std::string filename, std::ios_base::openmode flags = std::ios::binary);
 	void close();
 	void clear_buffer();
+	bool is_open();
 	~bstream();
 };
 

@@ -5,8 +5,8 @@
 
 tree* reconstruct_tree(ibstream* bin)
 {
-	// if(!bin)
-		// return NULL;
+	if(!bin || !(bin->is_open()))
+		return NULL;
 
 	std::stack<tree*> forest;
 	while(true)
@@ -27,6 +27,9 @@ tree* reconstruct_tree(ibstream* bin)
 
 void read_prefix_codes(tree* huffman, ibstream* bin, std::ostream* out)
 {
+	if(!out || !bin || !(bin->is_open()))
+		return;
+
 	std::string path_buffer = "";
 	while(true)
 	{
@@ -36,18 +39,21 @@ void read_prefix_codes(tree* huffman, ibstream* bin, std::ostream* out)
 		char x = (*huffman)[path_buffer];
 		if(x)
 		{
-			// std::cout<<x;
 			path_buffer = "";
 			out->write(&x, 1);
 		}
 	}
 }
 
-void decode(std::string filename)
+void decode(std::string source_file, std::string target_file)
 {
-	// ofstream fout(filename);
-	ibstream bin(filename+".huf");
+	ibstream bin(source_file);
+	std::ofstream fout(target_file);
+
 	tree* huffman = reconstruct_tree(&bin);
 	read_prefix_codes(huffman, &bin, &std::cout);
+
+	fout.close();
+	bin.close();
 	return;
 }

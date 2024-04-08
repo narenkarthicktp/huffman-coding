@@ -1,12 +1,15 @@
 #include "bstream.hpp"
 #include <ios>
-#include <string>
 
 bstream::bstream(std::string filename, std::ios_base::openmode flags)
 {
 	fd.open(filename, flags | std::ios::binary);
 	buffer = 0;
 	bitcounter = 0;
+}
+bool bstream::is_open()
+{
+	return fd.is_open();
 }
 void bstream::clear_buffer()
 {
@@ -15,13 +18,12 @@ void bstream::clear_buffer()
 }
 void bstream::close()
 {
-	if(fd)
+	if(is_open())
 		fd.close();
 }
 bstream::~bstream()
 {
-	if(fd)
-		fd.close();
+	close();
 }
 
 ibstream::ibstream(std::string filename, std::ios_base::openmode flags) : bstream(filename, flags | std::ios::in){;}
@@ -32,7 +34,7 @@ bool ibstream::eof()
 }
 char ibstream::read_byte()
 {
-	if(fd && !eof())
+	if(is_open() && !eof())
 	{
 		if(bitcounter == 0)
 			fd.read(&buffer, 1);
@@ -55,7 +57,7 @@ char ibstream::read_byte()
 }
 bool ibstream::read_bit()
 {
-	if(fd && !eof())
+	if(is_open() && !eof())
 	{
 		if(!bitcounter)
 			fd.read(&buffer, 1);
@@ -71,7 +73,7 @@ obstream::obstream(std::string filename, std::ios_base::openmode flags) : bstrea
 
 void obstream::write_byte(char byte)
 {
-	if(fd)
+	if(is_open())
 	{
 		if(bitcounter == 0)
 		{
@@ -82,7 +84,7 @@ void obstream::write_byte(char byte)
 		short residualcounter = 8;
 		while(bitcounter)
 		{
-			this->write_bit(byte & 1<<7);
+			write_bit(byte & 1<<7);
 			byte <<= 1;
 			residualcounter--;
 		}
@@ -92,7 +94,7 @@ void obstream::write_byte(char byte)
 }
 void obstream::write_bit(bool bit)
 {
-	if(fd)
+	if(is_open())
 	{
 		buffer <<= 1;
 		buffer += bit?1:0;
@@ -106,14 +108,14 @@ void obstream::write_bit(bool bit)
 
 void obstream::close()
 {
-	if(fd)
+	if(is_open())
 	{
 		while(bitcounter)
-			this->write_bit(0);
+			write_bit(0);
 		fd.close();
 	}
 }
 obstream::~obstream()
 {
-	this->close();
+	close();
 }

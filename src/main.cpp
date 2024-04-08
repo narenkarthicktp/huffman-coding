@@ -20,7 +20,7 @@ int main(int argc, char const *argv[])
 			{
 				source_file = string(argv[2]);
 				target_file = string(argv[3]);
-				decode(target_file);
+				decode(source_file, target_file);
 				break;
 			}
 	}

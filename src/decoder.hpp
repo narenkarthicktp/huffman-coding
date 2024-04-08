@@ -6,6 +6,6 @@
 
 tree* reconstruct_tree(ibstream* bin);
 void read_prefix_codes(tree* huffman, ibstream* bin, std::ostream* out);
-void decode(std::string filename);
+void decode(std::string source_file, std::string target_file);
 
 #endif
