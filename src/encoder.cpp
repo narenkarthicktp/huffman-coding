@@ -36,12 +36,17 @@ void write_header(tree* huffman, obstream* bout)
 		return;
 
 	std::string meta = huffman->to_string();
+
+	// 0s and 1s in the source file will conflict with the delimiters used in tree::to_string()
+	bool write_byte_flag = false;
 	for(auto x : meta)
 	{
-		if(x != '0' && x != '1')
+		if(write_byte_flag)
 			bout->write_byte(x);
 		else
 			bout->write_bit(x == '1');
+		// 1 is always followed by a character (that character could also be 1)
+		write_byte_flag = write_byte_flag ? false : (x == '1');
 	}
 	bout->write_bit(0);
 }

@@ -38,7 +38,7 @@ char tree::operator[](std::string bitstring)
 	for(auto i : bitstring)
 	{
 		if(!curr) return NULL;
-		curr = i-'0'?curr->right:curr->left;
+		curr = i-'0' ? curr->right : curr->left;
 	}
 	return curr->left && curr->right ? NULL : curr->data[0];
 }
