@@ -1,5 +1,4 @@
 #include "bstream.hpp"
-#include <ios>
 
 bstream::bstream(std::string filename, std::ios_base::openmode flags)
 {
@@ -105,15 +104,21 @@ void obstream::write_bit(bool bit)
 		}
 	}
 }
+void obstream::seekp(std::streampos pos)
+{
+	fd.seekp(pos);
+}
 
-void obstream::close()
+void obstream::flush()
 {
 	if(is_open())
-	{
 		while(bitcounter)
 			write_bit(0);
-		fd.close();
-	}
+}
+void obstream::close()
+{
+	flush();
+	fd.close();
 }
 obstream::~obstream()
 {

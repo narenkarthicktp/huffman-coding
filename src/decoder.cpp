@@ -25,13 +25,13 @@ tree* reconstruct_tree(ibstream* bin)
 	return forest.top();
 }
 
-void read_prefix_codes(tree* huffman, ibstream* bin, std::ostream* out)
+void read_prefix_codes(tree* huffman, ibstream* bin, std::ostream* out, unsigned long long total_bits)
 {
 	if(!out || !bin || !(bin->is_open()))
 		return;
 
 	std::string path_buffer = "";
-	while(true)
+	while(total_bits--)
 	{
 		path_buffer += (char)('0' + (int)bin->read_bit());
 		if(bin->eof())
@@ -45,13 +45,29 @@ void read_prefix_codes(tree* huffman, ibstream* bin, std::ostream* out)
 	}
 }
 
+unsigned long long read_size(ibstream* bin)
+{
+	if(!bin || !(bin->is_open()))
+		return 0;
+
+	unsigned long long total_bits = 0;
+	for(int i = 0; i < 8; i++)
+	{
+		unsigned char x = bin->read_byte();
+		total_bits = (total_bits << 8) + x;
+	}
+	return total_bits;
+}
+
 void decode(std::string source_file, std::string target_file)
 {
 	ibstream bin(source_file);
 	std::ofstream fout(target_file);
 
+	unsigned long long total_bits = read_size(&bin);
+	std::cout<<total_bits<<std::endl;
 	tree* huffman = reconstruct_tree(&bin);
-	read_prefix_codes(huffman, &bin, &std::cout);
+	read_prefix_codes(huffman, &bin, &std::cout, total_bits);
 
 	fout.close();
 	bin.close();

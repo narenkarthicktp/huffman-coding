@@ -30,11 +30,21 @@ tree* optimal_merge(minheap forest)
 	return forest.top();
 }
 
-void write_header(tree* huffman, obstream* bout)
+void write_size(unsigned long long total_bits, obstream* bout)
 {
 	if(!bout || !(bout->is_open()))
 		return;
 
+	for(int i = 7*8; i >= 0; i -= 8)
+		bout->write_byte((char)(total_bits >> i) & 255);
+}
+
+void write_header(tree* huffman, unsigned long long total_bits, obstream* bout)
+{
+	if(!bout || !(bout->is_open()))
+		return;
+
+	write_size(total_bits, bout);
 	std::string meta = huffman->to_string();
 
 	// 0s and 1s in the source file will conflict with the delimiters used in tree::to_string()
@@ -51,9 +61,9 @@ void write_header(tree* huffman, obstream* bout)
 	bout->write_bit(0);
 }
 
-unsigned int write_prefix_codes(tree* huffman, std::istream* in, obstream* bout)
+unsigned long long write_prefix_codes(tree* huffman, std::istream* in, obstream* bout)
 {
-	unsigned int total_bits = 0;
+	unsigned long long total_bits = 0;
 	char c;
 
 	if(!in || !bout || !(bout->is_open()))
@@ -89,11 +99,16 @@ void encode(std::string source_file, std::string target_file)
 	obstream bout(target_file);
 	std::fstream fin(source_file, std::ios_base::in);
 
-	// header contains the huffman tree
-	write_header(huffman, &bout);
+	// header contains total_bits and the huffman tree (pass 0 for total_bits as of now)
+	write_header(huffman, 0, &bout);
 	// encode data using huffman tree
-	write_prefix_codes(huffman, &fin, &bout);
+	unsigned long long total_bits = write_prefix_codes(huffman, &fin, &bout);
 
-	fin.close();
+	// go to start and overwrite the total_bits
+	bout.flush();
+	bout.seekp(0);
+	write_size(total_bits, &bout);
+
 	bout.close();
+	fin.close();
 }

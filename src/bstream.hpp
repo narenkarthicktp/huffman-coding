@@ -32,6 +32,8 @@ public:
 	obstream(std::string filename, std::ios_base::openmode flags = std::ios::binary | std::ios::out);
 	void write_bit(bool bit);
 	void write_byte(char byte);
+	void seekp(std::streampos pos);
+	void flush();
 	void close();
 	~obstream();
 };
