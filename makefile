@@ -6,10 +6,10 @@ BIN = bin/main.exe
 all : $(BIN)
 
 $(BIN) : $(OBJ)
-	$(CC) $(OBJ) -g -o $@
+	$(CC) $(OBJ) -o $@
 
 obj/%.o : src/%.cpp
-	$(CC) -c $< -g -o $@
+	$(CC) -c $< -o $@
 
 run : $(BIN)
 	.\\$(BIN)

@@ -65,9 +65,8 @@ void decode(std::string source_file, std::string target_file)
 	std::ofstream fout(target_file);
 
 	unsigned long long total_bits = read_size(&bin);
-	std::cout<<total_bits<<std::endl;
 	tree* huffman = reconstruct_tree(&bin);
-	read_prefix_codes(huffman, &bin, &std::cout, total_bits);
+	read_prefix_codes(huffman, &bin, &fout, total_bits);
 
 	fout.close();
 	bin.close();
