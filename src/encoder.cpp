@@ -1,5 +1,6 @@
 #include "encoder.hpp"
 #include <iostream>
+#include <unordered_map>
 
 unsigned int* get_byte_frequency(std::string source_file)
 {
@@ -61,6 +62,15 @@ void write_header(tree* huffman, unsigned long long total_bits, obstream* bout)
 	bout->write_bit(0);
 }
 
+std::string cached_lookup(tree huffman, char c)
+{
+	// memoization to avoid traversing the tree again
+	
+	static std::unordered_map<char, std::string> lookup = std::unordered_map<char, std::string>();
+	if(lookup.find(c) == lookup.end())
+		lookup[c] = huffman[c];
+	return lookup[c];
+}
 unsigned long long write_prefix_codes(tree* huffman, std::istream* in, obstream* bout)
 {
 	unsigned long long total_bits = 0;
@@ -71,7 +81,7 @@ unsigned long long write_prefix_codes(tree* huffman, std::istream* in, obstream*
 
 	while(in->get(c))
 	{
-		std::string bitstring = (*huffman)[c];
+		std::string bitstring = cached_lookup(*huffman, c);
 		total_bits += bitstring.length();
 		for(auto bit : bitstring)
 			bout->write_bit(bit == '1');
