@@ -2,22 +2,24 @@
 #include <iostream>
 #include <unordered_map>
 
-unsigned int* get_byte_frequency(std::string source_file)
+std::unordered_map<char, int> get_byte_frequency(std::string source_file)
 {
 	std::ifstream fin(source_file);
-	unsigned int* frequency_array = (unsigned int*)calloc(256, sizeof(unsigned int));
+	std::unordered_map<char, int> frequency = std::unordered_map<char, int>();
 	char c;
 
-	if (!fin)
+	if (fin)
 	{
-		std::cout<<"Unable to open file";
-		return NULL;
+		while(fin.get(c))
+		{
+			if(frequency.find(c) == frequency.end())
+				frequency[c] = 0;
+			frequency[c] += 1;
+		}
+		fin.close();
 	}
-	while(fin.get(c))
-		frequency_array[c] += 1;
-	fin.close();
 
-	return frequency_array;
+	return frequency;
 }
 
 tree* optimal_merge(minheap forest)
@@ -65,7 +67,6 @@ void write_header(tree* huffman, unsigned long long total_bits, obstream* bout)
 std::string cached_lookup(tree huffman, char c)
 {
 	// memoization to avoid traversing the tree again
-	
 	static std::unordered_map<char, std::string> lookup = std::unordered_map<char, std::string>();
 	if(lookup.find(c) == lookup.end())
 		lookup[c] = huffman[c];
@@ -93,15 +94,18 @@ unsigned long long write_prefix_codes(tree* huffman, std::istream* in, obstream*
 void encode(std::string source_file, std::string target_file)
 {
 	// count characters
-	unsigned int* frequency_array = get_byte_frequency(source_file);
+	std::unordered_map<char, int> frequency = get_byte_frequency(source_file);
+
+	if(frequency.size() == 0)
+	{
+		std::cout<<"File empty or enable to open";
+		return;
+	}
 
 	// grow forest :p
 	minheap forest;
-	for(int i = 0; i < 256; i++)
-	{
-		if(frequency_array[i])
-			forest.push(new tree(std::string(1, i), NULL, NULL, frequency_array[i]));
-	}
+	for(auto x: frequency)
+		forest.push(new tree(std::string(1, x.first), NULL, NULL, x.second));
 
 	// create huffman tree
 	tree* huffman = optimal_merge(forest);
